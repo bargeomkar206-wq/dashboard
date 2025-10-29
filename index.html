@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoDash - Transform Your Data Into Insights</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="36" height="36" rx="8" stroke="#00d9ff" stroke-width="2"/>
+                        <path d="M12 28L12 18M20 28L20 12M28 28L28 15" stroke="#00d9ff" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="12" cy="16" r="2" fill="#00d9ff"/>
+                        <circle cx="20" cy="10" r="2" fill="#00d9ff"/>
+                        <circle cx="28" cy="13" r="2" fill="#00d9ff"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-name">AlgoDash</h1>
+                    <p class="brand-tagline">Transform Your Data Into Insights</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-summarize-header" id="headerSummarizeBtn" style="display: none;" onclick="scrollToSummary()">
+                    ✨ Summarize
+                </button>
+                <button class="btn-icon" title="Help" onclick="alert('AlgoDash - Upload your CSV/Excel files to create interactive dashboards instantly!')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Upload Section (Initially Visible) -->
+        <section id="uploadSection" class="upload-section">
+            <div class="upload-card">
+                <div class="upload-area" id="dropZone">
+                    <div class="upload-icon">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="#00d9ff" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                    <h3>Drop your CSV or Excel file here</h3>
+                    <p>or click to browse</p>
+                    <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" hidden>
+                    <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">Choose File</button>
+                    <p class="file-info">Supported formats: CSV, Excel (.csv, .xlsx)</p>
+                </div>
+                
+                <div id="fileInfo" class="file-info-display" style="display: none;">
+                    <div class="file-details">
+                        <span class="file-name" id="fileName"></span>
+                        <span class="file-size" id="fileSize"></span>
+                    </div>
+                </div>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <div class="sample-data-section">
+                    <h3>Try Sample Datasets</h3>
+                    <div class="sample-cards">
+                        <div class="sample-card" onclick="loadSampleData('sales')">
+                            <div class="sample-icon" style="background: rgba(0, 217, 255, 0.15);">📊</div>
+                            <h4>Sales Dashboard</h4>
+                            <p>Regional sales, revenue &amp; customer metrics</p>
+                        </div>
+                        <div class="sample-card" onclick="loadSampleData('product')">
+                            <div class="sample-icon" style="background: rgba(168, 85, 247, 0.15);">📦</div>
+                            <h4>Product Performance</h4>
+                            <p>Product sales, ratings &amp; inventory</p>
+                        </div>
+                        <div class="sample-card" onclick="loadSampleData('customer')">
+                            <div class="sample-icon" style="background: rgba(236, 72, 153, 0.15);">👥</div>
+                            <h4>Customer Analytics</h4>
+                            <p>Segmentation, churn &amp; satisfaction</p>
+                        </div>
+                        <div class="sample-card" onclick="loadSampleData('marketing')">
+                            <div class="sample-icon" style="background: rgba(0, 255, 136, 0.15);">📈</div>
+                            <h4>Marketing Metrics</h4>
+                            <p>Channel performance &amp; ROI</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+            <div class="spinner-wrapper">
+                <div class="spinner"></div>
+            </div>
+            <p>Processing your data...</p>
+        </div>
+
+        <!-- Dashboard Section (Initially Hidden) -->
+        <section id="dashboardSection" class="dashboard-section" style="display: none;">
+            <div class="dashboard-content">
+            <!-- Action Buttons -->
+            <div class="action-bar">
+                <button class="btn btn-secondary" onclick="resetDashboard()">⬅ Upload New Data</button>
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="exportData()">📥 Export Data</button>
+                    <button class="btn btn-outline download-dashboard-btn" onclick="downloadDashboard()">📥 Download Dashboard</button>
+                </div>
+            </div>
+
+            <!-- Summary Cards -->
+            <div id="summaryCards" class="summary-cards"></div>
+
+            <!-- AI Summary Section -->
+            <section id="aiSummarySection" class="ai-summary-section" style="display: none;">
+                <div class="ai-summary-header">
+                    <span class="ai-summary-icon">🤖</span>
+                    <div>
+                        <h2 class="ai-summary-title">AI Business Insights</h2>
+                        <p style="margin: 0; color: var(--text-secondary); font-size: 0.875rem;">Powered by AlgoDash AI Analytics</p>
+                    </div>
+                </div>
+                <div id="aiSummaryContent" class="ai-summary-content">
+                    <!-- AI-generated content will be inserted here -->
+                </div>
+                <button class="btn btn-regenerate" onclick="generateAISummary()">
+                    🔄 Regenerate Insights
+                </button>
+            </section>
+
+            <!-- Filter Controls -->
+            <div class="filter-section">
+                <h3>📊 Visualization Controls</h3>
+                <div class="filter-controls" id="filterControls">
+                    <div class="filter-group">
+                        <label>X-Axis Column:</label>
+                        <select id="xAxisSelect" class="form-control" onchange="updateCharts()"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Y-Axis Column:</label>
+                        <select id="yAxisSelect" class="form-control" onchange="updateCharts()"></select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Chart Type:</label>
+                        <select id="chartTypeSelect" class="form-control" onchange="updateCharts()">
+                            <option value="bar">Bar Chart</option>
+                            <option value="line">Line Chart</option>
+                            <option value="area">Area Chart</option>
+                            <option value="horizontal">Horizontal Bar</option>
+                            <option value="scatter">Scatter Plot</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="categoryFilterGroup" style="display: none;">
+                        <label>Filter by Category:</label>
+                        <div id="categoryFilters" class="category-filters"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid-top">
+                <div class="chart-container">
+                    <h3 class="chart-title">Performance by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart1"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Multi-Metric Comparison</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart2"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="charts-grid-middle">
+                <div class="chart-container">
+                    <h3 class="chart-title">Correlation Analysis</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart3"></canvas>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <h3 class="chart-title">Trend Analysis Over Time</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart4"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="charts-grid-bottom">
+                <div class="chart-container chart-wide">
+                    <h3 class="chart-title">Revenue &amp; Performance Metrics</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="chart5"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="table-section">
+                <div class="table-header">
+                    <h3>📋 Data Table</h3>
+                    <div class="table-controls">
+                        <input type="text" id="searchInput" class="form-control search-input" placeholder="Search data..." onkeyup="filterTable()">
+                        <select id="rowsPerPage" class="form-control" onchange="changeRowsPerPage()">
+                            <option value="10">10 rows</option>
+                            <option value="20" selected>20 rows</option>
+                            <option value="50">50 rows</option>
+                            <option value="100">100 rows</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="dataTable" class="data-table">
+                        <thead id="tableHead"></thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+            </div>
+        </section>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message" style="display: none;">
+            <span class="error-icon">⚠️</span>
+            <span id="errorText"></span>
+        </div>
+    </main>
+
+    <!-- Floating Summarize Button -->
+    <button id="floatingSummarizeBtn" class="floating-summarize-btn" style="display: none;" onclick="scrollToSummary()">
+        <span>✨</span>
+        <span>Summarize</span>
+    </button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Powered by <strong>AlgoDash</strong> &copy; 2025</p>
+    </footer>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
